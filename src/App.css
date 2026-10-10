@@ -495,6 +495,7 @@
   .ugc-hero {
     grid-template-columns: 1fr;
     gap: 2.25rem;
+    min-height: 0;
     padding: 2.5rem 1.5rem 3rem;
   }
 
@@ -507,8 +508,20 @@
   }
 
   .ugc-hero__media {
+    position: relative;
+    display: block;
+    aspect-ratio: 9 / 16;
     width: min(100%, 350px);
+    height: auto;
+    min-height: 0;
     justify-self: start;
+  }
+
+  .ugc-hero__media img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
   }
 
   .featured-ugc {

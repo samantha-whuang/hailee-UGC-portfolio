@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
-import haileePortrait from './assets/hailee-portrait.jpg'
+import haileePortrait from './assets/hailee-portrait-web.jpg'
 import './App.css'
 
-const starburstThumbnail = '/thumbnails/starburst.png'
-const collarThumbnail = '/thumbnails/&collar.png'
-const upackThumbnail = '/thumbnails/U Pack.png'
+const starburstThumbnail = '/thumbnails/starburst.jpg'
+const collarThumbnail = '/thumbnails/&collar.jpg'
+const upackThumbnail = '/thumbnails/U Pack.jpg'
 const drugstoreVideo = '/videos-web-720/grwm.mp4'
 
 const featuredUgc = [
@@ -72,57 +72,56 @@ function getStickyHeaderHeight() {
 }
 
 function useVideoPreloader(sources) {
+  const preloadersRef = useRef([])
+
   useEffect(() => {
-    const preloaders = sources.map((src) => {
-      const preloader = document.createElement('video')
-      preloader.preload = 'auto'
-      preloader.muted = true
-      preloader.playsInline = true
-      preloader.src = src
-      preloader.load()
-      return preloader
+    const requestedSources = [...new Set(sources)].slice(0, 2)
+    const releasePreloader = (entry) => {
+      entry.player.pause()
+      entry.player.removeAttribute('src')
+      entry.player.load()
+      entry.src = null
+    }
+
+    preloadersRef.current.forEach((entry) => {
+      if (entry.src && !requestedSources.includes(entry.src)) releasePreloader(entry)
     })
 
+    requestedSources.forEach((src) => {
+      if (preloadersRef.current.some((entry) => entry.src === src)) return
+
+      let entry = preloadersRef.current.find((preloader) => !preloader.src)
+      if (!entry && preloadersRef.current.length < 2) {
+        const player = document.createElement('video')
+        player.preload = 'auto'
+        player.muted = true
+        player.playsInline = true
+        entry = { player, src: null }
+        preloadersRef.current.push(entry)
+      }
+      if (!entry) return
+
+      entry.src = src
+      entry.player.src = src
+      entry.player.load()
+    })
+  }, [sources])
+
+  useEffect(() => {
     return () => {
-      preloaders.forEach((preloader) => {
-        preloader.pause()
-        preloader.removeAttribute('src')
-        preloader.load()
+      preloadersRef.current.forEach((entry) => {
+        entry.player.pause()
+        entry.player.removeAttribute('src')
+        entry.player.load()
       })
     }
-  }, [sources])
+  }, [])
 }
 
 function UgcVideoPreview({ video }) {
-  const previewRef = useRef(null)
-  const [shouldLoad, setShouldLoad] = useState(false)
-
-  useEffect(() => {
-    const preview = previewRef.current
-    if (!preview || shouldLoad) return undefined
-
-    if (!('IntersectionObserver' in window)) {
-      setShouldLoad(true)
-      return undefined
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting) return
-
-        setShouldLoad(true)
-        observer.disconnect()
-      },
-      { rootMargin: '200px' },
-    )
-
-    observer.observe(preview)
-    return () => observer.disconnect()
-  }, [shouldLoad])
-
   return (
-    <div ref={previewRef} className="ugc-video-preview">
-      <video src={shouldLoad ? video.src : undefined} poster={video.thumbnail} muted playsInline preload="metadata" aria-label={video.label} />
+    <div className="ugc-video-preview">
+      <video poster={video.thumbnail} muted playsInline preload="none" aria-label={video.label} />
       <span className="ugc-video-preview__play" aria-hidden="true">▶</span>
     </div>
   )
@@ -331,7 +330,7 @@ function App() {
           </div>
 
           <div className="ugc-hero__media">
-            <img src={haileePortrait} alt="Hailee on a beach" />
+            <img src={haileePortrait} alt="Hailee on a beach" width="1200" height="1800" fetchPriority="high" decoding="async" />
           </div>
         </section>
 
