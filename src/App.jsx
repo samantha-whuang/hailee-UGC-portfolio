@@ -108,6 +108,7 @@ function UgcVideoPreview({ video }) {
 
 function UgcModal({ video, onClose, onPrevious, onNext }) {
   const [selectedVariant, setSelectedVariant] = useState(0)
+  const [isLoading, setIsLoading] = useState(true)
   const videoRef = useRef(null)
   const activeVideo = video.videos[selectedVariant]
 
@@ -115,7 +116,12 @@ function UgcModal({ video, onClose, onPrevious, onNext }) {
     const player = videoRef.current
     if (!player) return
 
+    let isCurrentSource = true
+    setIsLoading(true)
+
     const startPlayback = async () => {
+      if (!isCurrentSource) return
+
       player.muted = false
       try {
         await player.play()
@@ -125,7 +131,29 @@ function UgcModal({ video, onClose, onPrevious, onNext }) {
       }
     }
 
-    startPlayback()
+    const handleCanPlay = () => {
+      setIsLoading(false)
+      startPlayback()
+    }
+
+    const handleError = () => setIsLoading(false)
+
+    player.pause()
+    player.removeAttribute('src')
+    player.load()
+    player.addEventListener('canplay', handleCanPlay, { once: true })
+    player.addEventListener('error', handleError, { once: true })
+    player.src = activeVideo.src
+    player.load()
+
+    return () => {
+      isCurrentSource = false
+      player.removeEventListener('canplay', handleCanPlay)
+      player.removeEventListener('error', handleError)
+      player.pause()
+      player.removeAttribute('src')
+      player.load()
+    }
   }, [activeVideo.src])
 
   return (
@@ -150,8 +178,9 @@ function UgcModal({ video, onClose, onPrevious, onNext }) {
             →
           </button>
         )}
-        <div className="ugc-modal__video">
-          <video ref={videoRef} key={activeVideo.src} src={activeVideo.src} controls playsInline preload="auto" />
+        <div className={`ugc-modal__video${isLoading ? ' ugc-modal__video--loading' : ''}`} aria-busy={isLoading}>
+          <video ref={videoRef} poster={activeVideo.thumbnail} controls playsInline preload="auto" />
+          {isLoading && <span className="ugc-modal__loading" role="status" aria-label="Loading video" />}
         </div>
         <div className="ugc-modal__details">
           <p>Featured UGC</p>
