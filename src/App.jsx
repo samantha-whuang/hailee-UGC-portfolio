@@ -72,9 +72,35 @@ function getStickyHeaderHeight() {
 }
 
 function UgcVideoPreview({ video }) {
+  const previewRef = useRef(null)
+  const [shouldLoad, setShouldLoad] = useState(false)
+
+  useEffect(() => {
+    const preview = previewRef.current
+    if (!preview || shouldLoad) return undefined
+
+    if (!('IntersectionObserver' in window)) {
+      setShouldLoad(true)
+      return undefined
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return
+
+        setShouldLoad(true)
+        observer.disconnect()
+      },
+      { rootMargin: '200px' },
+    )
+
+    observer.observe(preview)
+    return () => observer.disconnect()
+  }, [shouldLoad])
+
   return (
-    <div className="ugc-video-preview">
-      <video src={video.src} poster={video.thumbnail} muted playsInline preload="metadata" aria-label={video.label} />
+    <div ref={previewRef} className="ugc-video-preview">
+      <video src={shouldLoad ? video.src : undefined} poster={video.thumbnail} muted playsInline preload="metadata" aria-label={video.label} />
       <span className="ugc-video-preview__play" aria-hidden="true">▶</span>
     </div>
   )
