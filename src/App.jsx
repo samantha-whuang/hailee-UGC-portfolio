@@ -5,41 +5,41 @@ import './App.css'
 const starburstThumbnail = '/thumbnails/starburst.png'
 const collarThumbnail = '/thumbnails/&collar.png'
 const upackThumbnail = '/thumbnails/U Pack.png'
-const drugstoreVideo = '/videos-web-optimized/grwm.mp4'
+const drugstoreVideo = '/videos-web-720/grwm.mp4'
 
 const featuredUgc = [
   {
     title: 'U-Pack',
     category: 'Vlog + Tutorial',
     videos: [
-      { label: 'U-Pack vlog', src: '/videos-web-optimized/upack-vlog.mp4', thumbnail: upackThumbnail },
-      { label: 'U-Pack how-to / explainer', src: '/videos-web-optimized/upack-explainer.mp4' },
+      { label: 'U-Pack vlog', src: '/videos-web-720/upack-vlog.mp4', thumbnail: upackThumbnail },
+      { label: 'U-Pack how-to / explainer', src: '/videos-web-720/upack-explainer.mp4' },
     ],
   },
   {
     title: 'Chicken Salad Chick',
     category: 'Voiceover',
-    videos: [{ label: 'Chicken Salad Chick video', src: '/videos-web-optimized/chicken-salad-chick.mp4' }],
+    videos: [{ label: 'Chicken Salad Chick video', src: '/videos-web-720/chicken-salad-chick.mp4' }],
   },
   {
     title: '&Collar',
     category: 'Talking Head + Voiceover',
-    videos: [{ label: '&Collar video', src: '/videos-web-optimized/andcollar.mp4', thumbnail: collarThumbnail }],
+    videos: [{ label: '&Collar video', src: '/videos-web-720/andcollar.mp4', thumbnail: collarThumbnail }],
   },
   {
     title: 'BEAR',
     category: 'Product Demonstration',
-    videos: [{ label: 'Bear Baby Food Prepper video', src: '/videos-web-optimized/bear-baby-food-prepper.mp4' }],
+    videos: [{ label: 'Bear Baby Food Prepper video', src: '/videos-web-720/bear-baby-food-prepper.mp4' }],
   },
   {
     title: 'Spruce',
     category: 'Product Education + Voiceover',
-    videos: [{ label: 'Spruce Weed Killer video', src: '/videos-web-optimized/spruce-weed-killer.mp4' }],
+    videos: [{ label: 'Spruce Weed Killer video', src: '/videos-web-720/spruce-weed-killer.mp4' }],
   },
   {
     title: 'Starburst',
     category: 'Creative Product Integration',
-    videos: [{ label: 'Starburst video', src: '/videos-web-optimized/starburst.mp4', thumbnail: starburstThumbnail }],
+    videos: [{ label: 'Starburst video', src: '/videos-web-720/starburst.mp4', thumbnail: starburstThumbnail }],
   },
   {
     title: 'Drugstore',
@@ -69,6 +69,28 @@ function getStickyHeaderHeight() {
       return position === 'fixed' || position === 'sticky'
     })
     .reduce((height, element) => Math.max(height, element.getBoundingClientRect().bottom), 0)
+}
+
+function useVideoPreloader(sources) {
+  useEffect(() => {
+    const preloaders = sources.map((src) => {
+      const preloader = document.createElement('video')
+      preloader.preload = 'auto'
+      preloader.muted = true
+      preloader.playsInline = true
+      preloader.src = src
+      preloader.load()
+      return preloader
+    })
+
+    return () => {
+      preloaders.forEach((preloader) => {
+        preloader.pause()
+        preloader.removeAttribute('src')
+        preloader.load()
+      })
+    }
+  }, [sources])
 }
 
 function UgcVideoPreview({ video }) {
@@ -106,7 +128,7 @@ function UgcVideoPreview({ video }) {
   )
 }
 
-function UgcModal({ video, onClose, onPrevious, onNext }) {
+function UgcModal({ video, onClose, onPrevious, onNext, onPlaybackStarted }) {
   const [selectedVariant, setSelectedVariant] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const videoRef = useRef(null)
@@ -120,20 +142,27 @@ function UgcModal({ video, onClose, onPrevious, onNext }) {
     setIsLoading(true)
 
     const startPlayback = async () => {
-      if (!isCurrentSource) return
+      if (!isCurrentSource) return false
 
       player.muted = false
       try {
         await player.play()
+        return true
       } catch {
         player.muted = true
-        await player.play().catch(() => {})
+        try {
+          await player.play()
+          return true
+        } catch {
+          return false
+        }
       }
     }
 
-    const handleCanPlay = () => {
+    const handleCanPlay = async () => {
       setIsLoading(false)
-      startPlayback()
+      const didStartPlayback = await startPlayback()
+      if (didStartPlayback && isCurrentSource) onPlaybackStarted()
     }
 
     const handleError = () => setIsLoading(false)
@@ -208,9 +237,25 @@ function UgcModal({ video, onClose, onPrevious, onNext }) {
 
 function App() {
   const [selectedVideo, setSelectedVideo] = useState(null)
+  const [preloadSources, setPreloadSources] = useState([])
   const [activeCard, setActiveCard] = useState(0)
   const [carouselPositionCount, setCarouselPositionCount] = useState(defaultCarouselPositionCount)
   const carouselRef = useRef(null)
+
+  useVideoPreloader(preloadSources)
+
+  const preloadAdjacentVideos = (index) => {
+    const sources = [index - 1, index + 1]
+      .filter((adjacentIndex) => adjacentIndex >= 0 && adjacentIndex < featuredUgc.length)
+      .map((adjacentIndex) => featuredUgc[adjacentIndex].videos[0].src)
+
+    setPreloadSources(sources)
+  }
+
+  const closeModal = () => {
+    setPreloadSources([])
+    setSelectedVideo(null)
+  }
 
   useEffect(() => {
     const updateStickyHeaderHeight = () => {
@@ -364,9 +409,10 @@ function App() {
         <UgcModal
           key={selectedVideo}
           video={featuredUgc[selectedVideo]}
-          onClose={() => setSelectedVideo(null)}
+          onClose={closeModal}
           onPrevious={selectedVideo > 0 ? () => setSelectedVideo(selectedVideo - 1) : null}
           onNext={selectedVideo < featuredUgc.length - 1 ? () => setSelectedVideo(selectedVideo + 1) : null}
+          onPlaybackStarted={() => preloadAdjacentVideos(selectedVideo)}
         />
       )}
     </>
