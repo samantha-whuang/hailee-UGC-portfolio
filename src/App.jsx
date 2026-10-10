@@ -5,41 +5,41 @@ import './App.css'
 const starburstThumbnail = '/thumbnails/starburst.png'
 const collarThumbnail = '/thumbnails/&collar.png'
 const upackThumbnail = '/thumbnails/U Pack.png'
-const drugstoreVideo = '/videos-web/grwm.mp4'
+const drugstoreVideo = '/videos-web-optimized/grwm.mp4'
 
 const featuredUgc = [
   {
     title: 'U-Pack',
     category: 'Vlog + Tutorial',
     videos: [
-      { label: 'U-Pack vlog', src: '/videos-web/upack-vlog.mp4', thumbnail: upackThumbnail },
-      { label: 'U-Pack how-to / explainer', src: '/videos-web/upack-explainer.mp4' },
+      { label: 'U-Pack vlog', src: '/videos-web-optimized/upack-vlog.mp4', thumbnail: upackThumbnail },
+      { label: 'U-Pack how-to / explainer', src: '/videos-web-optimized/upack-explainer.mp4' },
     ],
   },
   {
     title: 'Chicken Salad Chick',
     category: 'Voiceover',
-    videos: [{ label: 'Chicken Salad Chick video', src: '/videos-web/chicken-salad-chick.mp4' }],
+    videos: [{ label: 'Chicken Salad Chick video', src: '/videos-web-optimized/chicken-salad-chick.mp4' }],
   },
   {
     title: '&Collar',
     category: 'Talking Head + Voiceover',
-    videos: [{ label: '&Collar video', src: '/videos-web/andcollar.mp4', thumbnail: collarThumbnail }],
+    videos: [{ label: '&Collar video', src: '/videos-web-optimized/andcollar.mp4', thumbnail: collarThumbnail }],
   },
   {
     title: 'BEAR',
     category: 'Product Demonstration',
-    videos: [{ label: 'Bear Baby Food Prepper video', src: '/videos-web/bear-baby-food-prepper.mp4' }],
+    videos: [{ label: 'Bear Baby Food Prepper video', src: '/videos-web-optimized/bear-baby-food-prepper.mp4' }],
   },
   {
     title: 'Spruce',
     category: 'Product Education + Voiceover',
-    videos: [{ label: 'Spruce Weed Killer video', src: '/videos-web/spruce-weed-killer.mp4' }],
+    videos: [{ label: 'Spruce Weed Killer video', src: '/videos-web-optimized/spruce-weed-killer.mp4' }],
   },
   {
     title: 'Starburst',
     category: 'Creative Product Integration',
-    videos: [{ label: 'Starburst video', src: '/videos-web/starburst.mp4', thumbnail: starburstThumbnail }],
+    videos: [{ label: 'Starburst video', src: '/videos-web-optimized/starburst.mp4', thumbnail: starburstThumbnail }],
   },
   {
     title: 'Drugstore',
