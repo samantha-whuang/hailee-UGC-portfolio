@@ -1,0 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Serif+Display:ital@0;1&display=swap');
+
+:root {
+  --sticky-header-height: 0px;
+  --cream: #f8f2e8;
+  --cream-light: #fffaf3;
+  --charcoal: #39342e;
+  --charcoal-soft: #514a42;
+  --clay: #a96f58;
+  --sage: #84927c;
+  --taupe-soft: #dac8b7;
+  --muted: #6d6359;
+  --display: "DM Serif Display", Georgia, "Times New Roman", serif;
+  --sans: "DM Sans", "Helvetica Neue", Arial, sans-serif;
+  color: var(--charcoal);
+  background: var(--cream);
+  font-family: var(--sans);
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 2rem;
+}
