@@ -5,6 +5,10 @@ import './App.css'
 const starburstThumbnail = '/thumbnails/starburst.jpg'
 const collarThumbnail = '/thumbnails/&collar.jpg'
 const upackThumbnail = '/thumbnails/U Pack.jpg'
+const chickenSaladChickThumbnail = '/thumbnails/chicken salas chick.png'
+const bearBabyFoodPrepperThumbnail = '/thumbnails/bear baby food prepper.png'
+const spruceWeedKillerThumbnail = '/thumbnails/spruce weed killer.png'
+const grwmThumbnail = '/thumbnails/grwm.png'
 const drugstoreVideo = '/videos-web-720/grwm.mp4'
 
 const featuredUgc = [
@@ -13,13 +17,13 @@ const featuredUgc = [
     category: 'Vlog + Tutorial',
     videos: [
       { label: 'U-Pack vlog', src: '/videos-web-720/upack-vlog.mp4', thumbnail: upackThumbnail },
-      { label: 'U-Pack how-to / explainer', src: '/videos-web-720/upack-explainer.mp4' },
+      { label: 'U-Pack how-to / explainer', src: '/videos-web-720/upack-explainer.mp4', thumbnail: upackThumbnail },
     ],
   },
   {
     title: 'Chicken Salad Chick',
     category: 'Voiceover',
-    videos: [{ label: 'Chicken Salad Chick video', src: '/videos-web-720/chicken-salad-chick.mp4' }],
+    videos: [{ label: 'Chicken Salad Chick video', src: '/videos-web-720/chicken-salad-chick.mp4', thumbnail: chickenSaladChickThumbnail }],
   },
   {
     title: '&Collar',
@@ -29,12 +33,12 @@ const featuredUgc = [
   {
     title: 'BEAR',
     category: 'Product Demonstration',
-    videos: [{ label: 'Bear Baby Food Prepper video', src: '/videos-web-720/bear-baby-food-prepper.mp4' }],
+    videos: [{ label: 'Bear Baby Food Prepper video', src: '/videos-web-720/bear-baby-food-prepper.mp4', thumbnail: bearBabyFoodPrepperThumbnail }],
   },
   {
     title: 'Spruce',
     category: 'Product Education + Voiceover',
-    videos: [{ label: 'Spruce Weed Killer video', src: '/videos-web-720/spruce-weed-killer.mp4' }],
+    videos: [{ label: 'Spruce Weed Killer video', src: '/videos-web-720/spruce-weed-killer.mp4', thumbnail: spruceWeedKillerThumbnail }],
   },
   {
     title: 'Starburst',
@@ -44,7 +48,7 @@ const featuredUgc = [
   {
     title: 'Drugstore',
     category: 'GRWM / Music-Led Content',
-    videos: [{ label: 'Drugstore GRWM video', src: drugstoreVideo }],
+    videos: [{ label: 'Drugstore GRWM video', src: drugstoreVideo, thumbnail: grwmThumbnail }],
   },
 ]
 
